@@ -1,0 +1,11 @@
+{
+  "name": "CCExample",
+  "uuid": "7ad7bd84-0bd5-41b2-9842-f703e4fca06e",
+  "creator": {
+    "version": "3.8.2"
+  },
+  "dependencies": {
+    "jszip": "^3.10.1",
+    "jszip-utils": "^0.1.0"
+  }
+}
