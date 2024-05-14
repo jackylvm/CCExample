@@ -5,9 +5,9 @@
 library/
 temp/
 local/
-build/
 profiles/
-native
+build/android/proj/build/
+build/android/proj/libservice/build/
 #//////////////////////////
 # NPM
 #//////////////////////////
