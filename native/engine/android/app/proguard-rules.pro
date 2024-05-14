@@ -52,3 +52,26 @@
 -dontwarn android.hardware.lights.LightsRequest
 -dontwarn android.net.ssl.SSLSockets
 -dontwarn android.os.VibratorManager
+
+##---------------Begin: proguard configuration for fastjson  ----------
+-keepnames class * implements java.io.Serializable
+-keep public class * implements java.io.Serializable {
+    public *;
+}
+-keepclassmembers class * implements java.io.Serializable {
+    static final long serialVersionUID;
+    private static final java.io.ObjectStreamField[] serialPersistentFields;
+    private void writeObject(java.io.ObjectOutputStream);
+    private void readObject(java.io.ObjectInputStream);
+    java.lang.Object writeReplace();
+    java.lang.Object readResolve();
+}
+-dontwarn android.support.**
+-dontwarn com.alibaba.fastjson.**
+
+-keep class com.alibaba.fastjson.** { *; }
+
+-keepclassmembers class * {
+public <methods>;
+}
+##---------------End: proguard configuration for fastjson  ----------

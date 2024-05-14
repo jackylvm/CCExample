@@ -2,6 +2,9 @@ import org.apache.tools.ant.taskdefs.condition.Os
 
 apply plugin: 'com.android.application'
 
+// 打包版本
+apply from: './version.gradle'
+
 RES_PATH = RES_PATH.replace("\\", "/")
 COCOS_ENGINE_PATH = COCOS_ENGINE_PATH.replace("\\", "/")
 
@@ -21,8 +24,21 @@ android {
         applicationId APPLICATION_ID
         minSdkVersion PROP_MIN_SDK_VERSION
         targetSdkVersion PROP_TARGET_SDK_VERSION
-        versionCode 1
-        versionName "1.0"
+
+        versionCode android.defaultConfig.versionCode
+        versionName android.defaultConfig.versionName
+
+        applicationVariants.all { variant ->
+            variant.outputs.all { output ->
+                def outputFile = output.outputFile
+                if (outputFile != null && outputFile.name.endsWith('.apk')) {
+                    def date = new Date().format("YYMMddHHmm", TimeZone.getTimeZone("GMT+08:00"))
+                    def baseName = "${project.parent.name}_kr_v${defaultConfig.versionCode}_${date}"
+                    System.out.println(">>> AAB Package name: " + baseName)
+                    setProperty("archivesBaseName", baseName)
+                }
+            }
+        }
 
         externalNativeBuild {
             cmake {
@@ -55,7 +71,7 @@ android {
 
     signingConfigs {
 
-       release {
+        release {
             if (project.hasProperty("RELEASE_STORE_FILE") && !RELEASE_STORE_FILE.isEmpty()) {
                 storeFile file(RELEASE_STORE_FILE)
                 storePassword RELEASE_STORE_PASSWORD
@@ -76,7 +92,7 @@ android {
             if (project.hasProperty("RELEASE_STORE_FILE")) {
                 signingConfig signingConfigs.release
             }
-                        
+
             externalNativeBuild {
                 cmake {
                     // switch HIDE_SYMBOLS to OFF to skip compilation flag `-fvisibility=hidden`
@@ -88,6 +104,16 @@ android {
                 getIsDefault().set(true)
             }
 
+            applicationVariants.all { variant ->
+                variant.outputs.all { output ->
+                    def outputFile = output.outputFile
+                    if (outputFile != null && outputFile.name.endsWith('.apk')) {
+                        def date = new Date().format("YYMMddHHmm", TimeZone.getTimeZone("GMT+08:00"))
+                        outputFileName = "${project.parent.name}_kr_${variant.buildType.name}_v${defaultConfig.versionCode}_${date}.apk"
+                        System.out.println(">>> Package name: " + outputFileName)
+                    }
+                }
+            }
         }
 
         debug {
@@ -101,8 +127,8 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: '../libs', include: ['*.jar','*.aar'])
-    implementation fileTree(dir: 'libs', include: ['*.jar','*.aar'])
+    implementation fileTree(dir: '../libs', include: ['*.jar', '*.aar'])
+    implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
     implementation fileTree(dir: "${COCOS_ENGINE_PATH}/cocos/platform/android/java/libs", include: ['*.jar'])
     implementation project(':libservice')
     implementation project(':libcocos')
@@ -110,4 +136,7 @@ dependencies {
         implementation 'com.google.android.libraries.play.games:inputmapping:1.1.0-beta'
         implementation "org.jetbrains.kotlin:kotlin-stdlib:1.4.10"
     }
+
+    // 2024年5月13日 add by jacky
+    implementation 'com.alibaba:fastjson:1.2.83'
 }
